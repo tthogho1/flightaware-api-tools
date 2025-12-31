@@ -1,3 +1,13 @@
+---
+title: FlightAware MCP Agent
+emoji: ✈️
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
 # FlightAware API Tools
 
 A collection of tools and utilities for working with the FlightAware API to access flight tracking data and aviation information.
