@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -14,6 +15,9 @@ from langchain_mcp_adapters.client import MultiServerMCPClient
 # Load .env from the project root
 env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(env_path)
+
+# Add project root to sys.path
+sys.path.append(str(Path(__file__).parent.parent))
 
 # FastAPI lifespanイベントでエージェント初期化
 from contextlib import asynccontextmanager
