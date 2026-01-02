@@ -1,0 +1,95 @@
+2026-01-02 20:40:21,683 [INFO] MCP Server is starting...
+2026-01-02 20:40:21,766 [INFO] Processing request of type ListToolsRequest
+2026-01-02 20:40:36,737 [INFO] MCP Server is starting...
+2026-01-02 20:40:36,771 [INFO] Processing request of type ListToolsRequest
+2026-01-02 20:41:50,330 [INFO] MCP Server is starting...
+2026-01-02 20:41:50,389 [INFO] Processing request of type CallToolRequest
+2026-01-02 20:41:50,391 [INFO] APIリクエスト: https://aeroapi.flightaware.com/aeroapi/airports/NRT/flights/departures
+2026-01-02 20:41:52,961 [INFO] APIレスポンス: status_code=200
+2026-01-02 20:41:52,977 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:02:21,851 [INFO] MCP Server is starting...
+2026-01-02 21:02:21,893 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:07:18,790 [INFO] MCP Server is starting...
+2026-01-02 21:07:18,868 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:07:41,373 [INFO] MCP Server is starting...
+2026-01-02 21:07:41,424 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:11:01,605 [INFO] MCP Server is starting...
+2026-01-02 21:11:01,650 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:11:18,831 [INFO] MCP Server is starting...
+2026-01-02 21:11:18,876 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:11:43,352 [INFO] MCP Server is starting...
+2026-01-02 21:11:43,398 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:12:26,495 [INFO] MCP Server is starting...
+2026-01-02 21:12:26,579 [INFO] Processing request of type CallToolRequest
+2026-01-02 21:12:26,581 [INFO] APIリクエスト: https://aeroapi.flightaware.com/aeroapi/airports/NRT/flights/departures
+2026-01-02 21:12:29,720 [INFO] APIレスポンス: status_code=200
+2026-01-02 21:12:29,721 [INFO] APIリクエスト: https://aeroapi.flightaware.com/airports/NRT/flights/departures?cursor=ea6c2c8d3ccf1b5
+2026-01-02 21:12:31,977 [WARNING] APIリクエスト失敗: status_code=404
+2026-01-02 21:12:32,027 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:15:34,646 [INFO] MCP Server is starting...
+2026-01-02 21:15:34,703 [INFO] Processing request of type CallToolRequest
+2026-01-02 21:15:34,704 [INFO] APIリクエスト: https://aeroapi.flightaware.com/aeroapi/airports/NRT/flights/departures
+2026-01-02 21:15:36,959 [INFO] APIレスポンス: status_code=200
+2026-01-02 21:15:36,960 [INFO] APIリクエスト: https://aeroapi.flightaware.com/airports/NRT/flights/departures?cursor=fa436180b491000
+2026-01-02 21:15:38,394 [WARNING] APIリクエスト失敗: status_code=404
+2026-01-02 21:15:38,405 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:19:16,115 [INFO] MCP Server is starting...
+2026-01-02 21:19:16,153 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:19:34,531 [INFO] MCP Server is starting...
+2026-01-02 21:19:34,584 [INFO] Processing request of type ListToolsRequest
+2026-01-02 21:21:24,269 [INFO] MCP Server is starting...
+2026-01-02 21:21:24,308 [INFO] Processing request of type ListToolsRequest
+2026-01-02 22:15:23,666 [INFO] MCP Server is starting...
+2026-01-02 22:15:23,702 [INFO] Processing request of type ListToolsRequest
+2026-01-02 22:16:04,488 [INFO] MCP Server is starting...
+2026-01-02 22:16:04,587 [INFO] Processing request of type ListToolsRequest
+2026-01-02 22:17:45,957 [INFO] MCP Server is starting...
+2026-01-02 22:17:46,040 [INFO] Processing request of type CallToolRequest
+2026-01-02 22:17:46,043 [INFO] get_departures called with airport_code=RJAA, start=2023-10-05T23:00:00Z, end=None, fetch_all=True
+2026-01-02 22:17:46,043 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/airports/RJAA/flights/departures params={'start': '2023-10-05T23:00:00Z'}
+2026-01-02 22:17:48,411 [WARNING] API Request Failed: status_code=400
+2026-01-02 22:17:48,423 [INFO] Processing request of type ListToolsRequest
+2026-01-02 22:19:16,442 [INFO] MCP Server is starting...
+2026-01-02 22:19:16,531 [INFO] Processing request of type CallToolRequest
+2026-01-02 22:19:16,533 [INFO] get_departures called with airport_code=RJAA, start=2023-10-05T23:00:00Z, end=2023-10-06T00:00:00Z, fetch_all=False
+2026-01-02 22:19:16,534 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/airports/RJAA/flights/departures params={'start': '2023-10-05T23:00:00Z', 'end': '2023-10-06T00:00:00Z'}
+2026-01-02 22:19:18,862 [WARNING] API Request Failed: status_code=400
+2026-01-02 22:19:18,876 [INFO] Processing request of type ListToolsRequest
+2026-01-02 22:45:50,015 [INFO] MCP Server is starting...
+2026-01-02 22:45:50,151 [INFO] Processing request of type CallToolRequest
+2026-01-02 22:45:50,153 [INFO] get_departures called with airport_code=RJAA, start=2023-10-06T23:00:00Z, end=2023-10-07T00:00:00Z, fetch_all=False
+2026-01-02 22:45:50,153 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/airports/RJAA/flights/departures params={'start': '2023-10-06T23:00:00Z', 'end': '2023-10-07T00:00:00Z'}
+2026-01-02 22:45:52,980 [WARNING] API Request Failed: status_code=400
+2026-01-02 22:45:52,993 [INFO] Processing request of type ListToolsRequest
+2026-01-02 22:56:05,233 [INFO] MCP Server is starting...
+2026-01-02 22:56:05,283 [INFO] Processing request of type ListToolsRequest
+2026-01-02 23:00:01,745 [INFO] MCP Server is starting...
+2026-01-02 23:00:01,847 [INFO] Processing request of type ListToolsRequest
+2026-01-02 23:00:09,135 [INFO] MCP Server is starting...
+2026-01-02 23:00:09,185 [INFO] Processing request of type CallToolRequest
+2026-01-02 23:00:09,186 [INFO] get_departures called with airport_code=RJAA, start=2023-10-04T23:00:00Z, end=2023-10-05T00:00:00Z, fetch_all=False
+2026-01-02 23:00:09,186 [ERROR] Validation Error: start must be within the last 10 days.
+2026-01-02 23:00:09,189 [INFO] Processing request of type ListToolsRequest
+2026-01-02 23:00:42,496 [INFO] MCP Server is starting...
+2026-01-02 23:00:42,565 [INFO] Processing request of type CallToolRequest
+2026-01-02 23:00:42,566 [INFO] get_departures called with airport_code=RJAA, start=2023-10-04T20:00:00Z, end=2023-10-04T21:00:00Z, fetch_all=False
+2026-01-02 23:00:42,567 [ERROR] Validation Error: start must be within the last 10 days.
+2026-01-02 23:00:42,572 [INFO] Processing request of type ListToolsRequest
+2026-01-02 23:02:24,636 [INFO] MCP Server is starting...
+2026-01-02 23:02:24,698 [INFO] Processing request of type CallToolRequest
+2026-01-02 23:02:24,699 [INFO] get_departures called with airport_code=RJAA, start=2026-01-02T21:00:00Z, end=2026-01-02T22:00:00Z, fetch_all=False
+2026-01-02 23:02:24,700 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/airports/RJAA/flights/departures params={'start': '2026-01-02T21:00:00Z', 'end': '2026-01-02T22:00:00Z'}
+2026-01-02 23:02:26,880 [INFO] API Response: status_code=200
+2026-01-02 23:02:26,894 [INFO] Processing request of type ListToolsRequest
+2026-01-02 23:04:23,489 [INFO] MCP Server is starting...
+2026-01-02 23:04:23,541 [INFO] Processing request of type CallToolRequest
+2026-01-02 23:04:23,542 [INFO] get_departures called with airport_code=RJAA, start=None, end=None, fetch_all=False
+2026-01-02 23:04:23,542 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/airports/RJAA/flights/departures params={'start': '2026-01-02T13:04:23.542361Z', 'end': '2026-01-02T15:04:23.542361Z'}
+2026-01-02 23:04:25,108 [WARNING] API Request Failed: status_code=400
+2026-01-02 23:04:25,115 [INFO] Processing request of type ListToolsRequest
+2026-01-02 23:05:38,320 [INFO] MCP Server is starting...
+2026-01-02 23:05:38,364 [INFO] Processing request of type CallToolRequest
+2026-01-02 23:05:38,365 [INFO] get_departures called with airport_code=RJAA, start=2026-01-02T09:00:00Z, end=2026-01-02T11:00:00Z, fetch_all=False
+2026-01-02 23:05:38,365 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/airports/RJAA/flights/departures params={'start': '2026-01-02T09:00:00Z', 'end': '2026-01-02T11:00:00Z'}
+2026-01-02 23:05:40,737 [INFO] API Response: status_code=200
+2026-01-02 23:05:40,749 [INFO] Processing request of type ListToolsRequest
