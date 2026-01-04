@@ -5,7 +5,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from datetime import datetime, timedelta, timezone
-from typing import Optional
+from typing import Optional, Dict, Any, List, Union
 
 # Log configuration (output to file)
 log_file_path = os.path.join(os.path.dirname(__file__), "server.log")
@@ -26,37 +26,51 @@ MAX_PAST_DAYS = 10
 MAX_FUTURE_HOURS = 24
 
 
-def validate_time_range(start_str: Optional[str], end_str: Optional[str]):
+def construct_time_range(
+    year: Optional[int],
+    month: Optional[int],
+    day: Optional[int],
+    start_time: Optional[str],
+    end_time: Optional[str],
+):
     now = datetime.now(timezone.utc)
 
-    if start_str:
-        try:
-            # Replace Z with +00:00 and parse
-            start = datetime.fromisoformat(start_str.replace("Z", "+00:00"))
-        except ValueError:
-            raise ValueError(
-                f"Invalid start time format: {start_str}. Use ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)."
-            )
-    else:
+    # If no parameters are provided, use default 1 hour window around now
+    if all(p is None for p in [year, month, day, start_time, end_time]):
         start = now - timedelta(hours=1)
-
-    if end_str:
-        try:
-            # Replace Z with +00:00 and parse
-            end = datetime.fromisoformat(end_str.replace("Z", "+00:00"))
-        except ValueError:
-            raise ValueError(
-                f"Invalid end time format: {end_str}. Use ISO 8601 (YYYY-MM-DDTHH:MM:SSZ)."
-            )
-    else:
         end = now + timedelta(hours=1)
+        return (
+            start.isoformat().replace("+00:00", "Z"),
+            end.isoformat().replace("+00:00", "Z"),
+        )
 
-    # Ensure timezone awareness
-    if start.tzinfo is None:
-        start = start.replace(tzinfo=timezone.utc)
-    if end.tzinfo is None:
-        end = end.replace(tzinfo=timezone.utc)
+    # Use current date parts if not provided
+    y = year if year is not None else now.year
+    m = month if month is not None else now.month
+    d = day if day is not None else now.day
 
+    try:
+        # Construct base date in UTC
+        base_date = datetime(y, m, d, tzinfo=timezone.utc)
+
+        if start_time:
+            sh, sm = map(int, start_time.split(":"))
+            start = base_date.replace(hour=sh, minute=sm, second=0)
+        else:
+            # Default to beginning of day if date specified
+            start = base_date.replace(hour=0, minute=0, second=0)
+
+        if end_time:
+            eh, em = map(int, end_time.split(":"))
+            end = base_date.replace(hour=eh, minute=em, second=0)
+        else:
+            # Default to end of day if date specified
+            end = base_date.replace(hour=23, minute=59, second=59)
+
+    except ValueError as e:
+        raise ValueError(f"Invalid date/time components: {e}")
+
+    # Validation logic (MAX_PAST_DAYS, MAX_FUTURE_HOURS)
     min_start = now - timedelta(days=MAX_PAST_DAYS)
     max_end = now + timedelta(hours=MAX_FUTURE_HOURS)
 
@@ -109,6 +123,53 @@ def localize_flight_data(flights):
     return flights
 
 
+def fetch_paginated_data(
+    url: str,
+    params: Optional[Dict[str, Any]],
+    data_key: str,
+    fetch_all: bool = False,
+) -> Union[List[Dict[str, Any]], str]:
+    """Fetches paginated data from the FlightAware API.
+
+    Args:
+        url: The API endpoint URL.
+        params: Query parameters for the request.
+        data_key: The key to extract data from the response (e.g., "departures", "arrivals", "scheduled").
+        fetch_all: If True, retrieves all data using pagination.
+
+    Returns:
+        List of flight data with times converted to JST, or error message string.
+    """
+    all_data = []
+
+    while True:
+        logging.info(f"API Request: {url} params={params}")
+        response = requests.get(url, headers=headers, params=params)
+
+        if response.status_code != 200:
+            logging.warning(f"API Request Failed: status_code={response.status_code}")
+            if not all_data:
+                return "Failed to retrieve data."
+            break
+
+        logging.info(f"API Response: status_code={response.status_code}")
+        data = response.json()
+        items = data.get(data_key, [])
+        all_data.extend(items)
+
+        if not fetch_all:
+            break
+
+        next_link = data.get("links", {}).get("next")
+        if not next_link:
+            break
+
+        url = f"https://aeroapi.flightaware.com{next_link}"
+        params = None  # Clear params for subsequent requests
+
+    return localize_flight_data(all_data)
+
+
 # Initialize MCP Server
 mcp = FastMCP("FlightAware-Tracker")
 
@@ -116,119 +177,133 @@ mcp = FastMCP("FlightAware-Tracker")
 @mcp.tool()
 def get_departures(
     airport_code: str,
-    start: Optional[str] = None,
-    end: Optional[str] = None,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+    day: Optional[int] = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
     fetch_all: bool = False,
 ):
     """Retrieves the list of departures for a specified airport.
 
     Args:
         airport_code: The ICAO code of the airport.
-        start: Start time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to 1 hour ago. Must be within the last 10 days.
-        end: End time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to 1 hour from now. Must be within the next 24 hours.
+        year: Year (e.g., 2026). Defaults to current year.
+        month: Month (1-12). Defaults to current month.
+        day: Day (1-31). Defaults to current day.
+        start_time: Start time in HH:MM format (e.g., "09:00"). Defaults to 00:00 if date is specified, or 1 hour ago if no date/time provided.
+        end_time: End time in HH:MM format (e.g., "18:00"). Defaults to 23:59 if date is specified, or 1 hour from now if no date/time provided.
         fetch_all: If True, retrieves all data using pagination.
     """
     logging.info(
-        f"get_departures called with airport_code={airport_code}, start={start}, end={end}, fetch_all={fetch_all}"
+        f"get_departures called with airport_code={airport_code}, year={year}, month={month}, day={day}, start_time={start_time}, end_time={end_time}, fetch_all={fetch_all}"
     )
 
     try:
-        start_param, end_param = validate_time_range(start, end)
+        start_param, end_param = construct_time_range(
+            year, month, day, start_time, end_time
+        )
     except ValueError as e:
         logging.error(f"Validation Error: {e}")
         return f"Input Error: {e}"
 
     url = f"https://aeroapi.flightaware.com/aeroapi/airports/{airport_code}/flights/departures"
-
     params = {"start": start_param, "end": end_param}
 
-    all_data = []
-
-    while True:
-        logging.info(f"API Request: {url} params={params}")
-        response = requests.get(url, headers=headers, params=params)
-
-        if response.status_code != 200:
-            logging.warning(f"API Request Failed: status_code={response.status_code}")
-            if not all_data:
-                return "Failed to retrieve data."
-            break
-
-        logging.info(f"API Response: status_code={response.status_code}")
-        data = response.json()
-        departures = data.get("departures", [])
-        all_data.extend(departures)
-
-        if not fetch_all:
-            break
-
-        next_link = data.get("links", {}).get("next")
-        if not next_link:
-            break
-
-        url = f"https://aeroapi.flightaware.com{next_link}"
-        params = None  # Clear params for subsequent requests
-
-    return localize_flight_data(all_data)
+    return fetch_paginated_data(url, params, "departures", fetch_all)
 
 
 @mcp.tool()
 def get_arrivals(
     airport_code: str,
-    start: Optional[str] = None,
-    end: Optional[str] = None,
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+    day: Optional[int] = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
     fetch_all: bool = False,
 ):
     """Retrieves the list of arrivals for a specified airport.
 
     Args:
         airport_code: The ICAO code of the airport.
-        start: Start time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to 1 hour ago. Must be within the last 10 days.
-        end: End time in ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ). Defaults to 1 hour from now. Must be within the next 24 hours.
+        year: Year (e.g., 2026). Defaults to current year.
+        month: Month (1-12). Defaults to current month.
+        day: Day (1-31). Defaults to current day.
+        start_time: Start time in HH:MM format (e.g., "09:00"). Defaults to 00:00 if date is specified, or 1 hour ago if no date/time provided.
+        end_time: End time in HH:MM format (e.g., "18:00"). Defaults to 23:59 if date is specified, or 1 hour from now if no date/time provided.
         fetch_all: If True, retrieves all data using pagination.
     """
     logging.info(
-        f"get_arrivals called with airport_code={airport_code}, start={start}, end={end}, fetch_all={fetch_all}"
+        f"get_arrivals called with airport_code={airport_code}, year={year}, month={month}, day={day}, start_time={start_time}, end_time={end_time}, fetch_all={fetch_all}"
     )
 
     try:
-        start_param, end_param = validate_time_range(start, end)
+        start_param, end_param = construct_time_range(
+            year, month, day, start_time, end_time
+        )
     except ValueError as e:
         logging.error(f"Validation Error: {e}")
         return f"Input Error: {e}"
 
     url = f"https://aeroapi.flightaware.com/aeroapi/airports/{airport_code}/flights/arrivals"
-
     params = {"start": start_param, "end": end_param}
 
-    all_data = []
+    return fetch_paginated_data(url, params, "arrivals", fetch_all)
 
-    while True:
-        logging.info(f"API Request: {url} params={params}")
-        response = requests.get(url, headers=headers, params=params)
 
-        if response.status_code != 200:
-            logging.warning(f"API Request Failed: status_code={response.status_code}")
-            if not all_data:
-                return "Failed to retrieve data."
-            break
+@mcp.tool()
+def get_schedules(
+    year: Optional[int] = None,
+    month: Optional[int] = None,
+    day: Optional[int] = None,
+    start_time: Optional[str] = None,
+    end_time: Optional[str] = None,
+    origin: Optional[str] = None,
+    destination: Optional[str] = None,
+    airline: Optional[str] = None,
+    flight_number: Optional[str] = None,
+    fetch_all: bool = False,
+):
+    """Retrieves flight future schedules for a specified time range.
 
-        logging.info(f"API Response: status_code={response.status_code}")
-        data = response.json()
-        arrivals = data.get("arrivals", [])
-        all_data.extend(arrivals)
+    Args:
+        year: Year (e.g., 2026). Defaults to current year.
+        month: Month (1-12). Defaults to current month.
+        day: Day (1-31). Defaults to current day.
+        start_time: Start time in HH:MM format (e.g., "09:00"). Defaults to 00:00 if date is specified, or 1 hour ago if no date/time provided.
+        end_time: End time in HH:MM format (e.g., "18:00"). Defaults to 23:59 if date is specified, or 1 hour from now if no date/time provided.
+        origin: Origin airport code (ICAO).
+        destination: Destination airport code (ICAO).
+        airline: Airline code (ICAO).
+        flight_number: Flight number.
+        fetch_all: If True, retrieves all data using pagination.
+    """
+    logging.info(
+        f"get_schedules called with year={year}, month={month}, day={day}, start_time={start_time}, end_time={end_time}, origin={origin}, destination={destination}, airline={airline}, flight_number={flight_number}, fetch_all={fetch_all}"
+    )
 
-        if not fetch_all:
-            break
+    try:
+        start_date, end_date = construct_time_range(
+            year, month, day, start_time, end_time
+        )
+    except ValueError as e:
+        logging.error(f"Validation Error: {e}")
+        return f"Input Error: {e}"
 
-        next_link = data.get("links", {}).get("next")
-        if not next_link:
-            break
+    url = f"https://aeroapi.flightaware.com/aeroapi/schedules/{start_date}/{end_date}"
 
-        url = f"https://aeroapi.flightaware.com{next_link}"
-        params = None  # Clear params for subsequent requests
+    params = {}
+    if origin:
+        params["origin"] = origin
+    if destination:
+        params["destination"] = destination
+    if airline:
+        params["airline"] = airline
+    if flight_number:
+        params["flight_number"] = flight_number
 
-    return localize_flight_data(all_data)
+    return fetch_paginated_data(url, params if params else None, "scheduled", fetch_all)
 
 
 if __name__ == "__main__":
