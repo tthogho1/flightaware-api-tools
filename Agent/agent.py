@@ -3,7 +3,7 @@ import sys
 from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
@@ -64,6 +64,16 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root():
+    return """
+    <html><head><title>FlightAware MCP</title></head>
+    <body><h1>Working!</h1>
+    <a href="/view">/viewへ移動</a></body></html>
+    """
+
 
 # staticファイルの配置先(frontend/public)を/viewで配信
 static_dir = Path(__file__).parent / "public"

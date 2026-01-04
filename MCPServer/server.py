@@ -82,8 +82,8 @@ def construct_time_range(
         raise ValueError("end must be after start.")
 
     return (
-        start.isoformat().replace("+00:00", "Z"),
-        end.isoformat().replace("+00:00", "Z"),
+        start.isoformat(timespec="seconds").replace("+00:00", "Z"),
+        end.isoformat(timespec="seconds").replace("+00:00", "Z"),
     )
 
 
