@@ -175,7 +175,7 @@ mcp = FastMCP("FlightAware-Tracker")
 
 
 @mcp.tool()
-def get_departures(
+def get_past_departures(
     airport_code: str,
     year: Optional[int] = None,
     month: Optional[int] = None,
@@ -214,7 +214,7 @@ def get_departures(
 
 
 @mcp.tool()
-def get_arrivals(
+def get_past_arrivals(
     airport_code: str,
     year: Optional[int] = None,
     month: Optional[int] = None,
@@ -253,7 +253,7 @@ def get_arrivals(
 
 
 @mcp.tool()
-def get_schedules(
+def get_flight_schedules(
     year: Optional[int] = None,
     month: Optional[int] = None,
     day: Optional[int] = None,
