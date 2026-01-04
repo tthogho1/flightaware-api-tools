@@ -66,18 +66,17 @@ app.add_middleware(
 )
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/health", response_class=HTMLResponse)
 async def read_root():
     return """
     <html><head><title>FlightAware MCP</title></head>
     <body><h1>Working!</h1>
-    <a href="/view">/viewへ移動</a></body></html>
+    <a href="/">/viewへ移動</a></body></html>
     """
 
 
 # staticファイルの配置先(frontend/public)を/viewで配信
 static_dir = Path(__file__).parent / "public"
-app.mount("/view", StaticFiles(directory=static_dir, html=True), name="static")
 
 
 @app.post("/api/agent")
@@ -99,6 +98,8 @@ async def ask_agent(request: Request):
     else:
         return {"output": str(response)}
 
+
+app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
 
 if __name__ == "__main__":
     uvicorn.run("Agent.agent:app", host="0.0.0.0", port=8000, reload=True)

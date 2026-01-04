@@ -29,3 +29,11 @@
 2026-01-04 21:07:13,527 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/schedules/2026-01-04T14:00:00Z/2026-01-04T23:59:00Z params={'origin': 'RJAA', 'destination': 'RCTP'}
 2026-01-04 21:07:15,076 [INFO] API Response: status_code=200
 2026-01-04 21:07:15,079 [INFO] Processing request of type ListToolsRequest
+2026-01-04 21:29:16,676 [INFO] MCP Server is starting...
+2026-01-04 21:29:16,961 [INFO] Processing request of type ListToolsRequest
+2026-01-04 21:30:05,809 [INFO] MCP Server is starting...
+2026-01-04 21:30:05,884 [INFO] Processing request of type CallToolRequest
+2026-01-04 21:30:05,886 [INFO] get_departures called with airport_code=RJAA, year=None, month=None, day=None, start_time=09:00, end_time=10:00, fetch_all=False
+2026-01-04 21:30:05,886 [INFO] API Request: https://aeroapi.flightaware.com/aeroapi/airports/RJAA/flights/departures params={'start': '2026-01-04T09:00:00Z', 'end': '2026-01-04T10:00:00Z'}
+2026-01-04 21:30:07,560 [INFO] API Response: status_code=200
+2026-01-04 21:30:07,578 [INFO] Processing request of type ListToolsRequest
