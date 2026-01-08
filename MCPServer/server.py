@@ -143,9 +143,7 @@ def fetch_paginated_data(
     all_data = []
 
     while True:
-        logging.info(
-            f"API Request: {url} params={params} x-apikey={headers.get('x-apikey')}"
-        )
+        logging.info(f"API Request: {url} params={params}")
         response = requests.get(url, headers=headers, params=params)
 
         if response.status_code != 200:
