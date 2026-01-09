@@ -36,6 +36,7 @@ async def lifespan(app: FastAPI):
                 "transport": "stdio",
                 "command": "python",
                 "args": [server_path],
+                "env": dict(os.environ),  # 環境変数をサブプロセスに渡す
             }
         }
     )
